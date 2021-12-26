@@ -4,22 +4,23 @@ import java.io.IOException;
 import java.util.Map;
 
 import controller.PaymentController;
-import entity.cart.Cart;
-import common.exception.PlaceOrderException;
 import entity.invoice.Invoice;
-import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import utils.Configs;
 import views.screen.BaseScreenHandler;
-import views.screen.popup.PopupScreen;
 
 public class PaymentScreenHandler extends BaseScreenHandler {
+
+	@FXML
+	private Label date;
+
+	@FXML
+	private Label code;
 
 	@FXML
 	private Button btnConfirmPayment;
@@ -27,7 +28,15 @@ public class PaymentScreenHandler extends BaseScreenHandler {
 	@FXML
 	private ImageView loadingImage;
 
+	// Nguyen Duc Tuan - 20180192
+	@FXML
+	private RadioButton creditCardRadioButton;
+
+	@FXML
+	private RadioButton domesticCardRadioButton;
+
 	private Invoice invoice;
+	private String paymentMethod = "Credit Card";
 
 	public PaymentScreenHandler(Stage stage, String screenPath, int amount, String contents) throws IOException {
 		super(stage, screenPath);
@@ -43,6 +52,27 @@ public class PaymentScreenHandler extends BaseScreenHandler {
 				((PaymentController) getBController()).emptyCart();
 			} catch (Exception exp) {
 				System.out.println(exp.getStackTrace());
+			}
+		});
+
+		ToggleGroup group = new ToggleGroup();
+		creditCardRadioButton.setToggleGroup(group);
+		domesticCardRadioButton.setToggleGroup(group);
+
+		group.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
+			@Override
+			public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
+				if(group.getSelectedToggle() != null){
+					RadioButton button = (RadioButton) group.getSelectedToggle();
+					paymentMethod = button.getText();
+					if(button.getText().equals("Domestic Credit Card")){
+						date.setText("Valid From");
+					} else {
+						date.setText("Expiration Date");
+					}
+					code.setText("Card security code");
+
+				}
 			}
 		});
 	}
@@ -65,7 +95,7 @@ public class PaymentScreenHandler extends BaseScreenHandler {
 	void confirmToPayOrder() throws IOException{
 		String contents = "pay order";
 		PaymentController ctrl = (PaymentController) getBController();
-		Map<String, String> response = ctrl.payOrder(invoice.getAmount(), contents, cardNumber.getText(), holderName.getText(),
+		Map<String, String> response = ctrl.payOrderUsingCreditCard(invoice.getAmount(), contents, cardNumber.getText(), holderName.getText(),
 				expirationDate.getText(), securityCode.getText());
 
 		BaseScreenHandler resultScreen = new ResultScreenHandler(this.stage, Configs.RESULT_SCREEN_PATH, response.get("RESULT"), response.get("MESSAGE") );

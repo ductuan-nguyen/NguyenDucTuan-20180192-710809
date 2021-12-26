@@ -17,7 +17,11 @@ import utils.Utils;
 public class Media {
 
     private static Logger LOGGER = Utils.getLogger(Media.class.getName());
-
+    // Nguyen Duc Tuan - 20180192
+    protected float height = 60;
+    protected float width = 10;
+    protected float length = 10;
+    protected float realWeight = (float) 0.5;
     protected Statement stm;
     protected int id;
     protected String title;
@@ -27,6 +31,7 @@ public class Media {
     protected int quantity;
     protected String type;
     protected String imageURL;
+
 
     public Media() throws SQLException{
         stm = AIMSDB.getConnection().createStatement();
@@ -148,6 +153,45 @@ public class Media {
 
     public String getType() {
         return this.type;
+    }
+
+    // Nguyen Duc Tuan - 20180192
+    public float getWeight() {
+        float alternativeWeight = (this.width * this.height * this.length)/6000;
+        return (this.realWeight + alternativeWeight);
+    }
+
+    // Nguyen Duc Tuan - 20180192
+    public float getHeight() {
+        return height;
+    }
+
+    public void setHeight(float height) {
+        this.height = height;
+    }
+
+    public float getWidth() {
+        return width;
+    }
+
+    public void setWidth(float width) {
+        this.width = width;
+    }
+
+    public float getLength() {
+        return length;
+    }
+
+    public void setLength(float length) {
+        this.length = length;
+    }
+
+    public float getRealWeight() {
+        return realWeight;
+    }
+
+    public void setRealWeight(float realWeight) {
+        this.realWeight = realWeight;
     }
 
     public Media setType(String type) {

@@ -1,6 +1,8 @@
 package controller;
 
 import entity.order.Order;
+import utils.ShippingFeeCalculator;
+import utils.WeightBasedFeeCalculator;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -17,7 +19,7 @@ public class PlaceRushOrderController extends PlaceOrderController{
      * Just for logging purpose
      */
     private static Logger LOGGER = utils.Utils.getLogger(PlaceRushOrderController.class.getName());
-
+    private final ShippingFeeCalculator shippingFeeCalculator = new WeightBasedFeeCalculator();
     @Override
     public void validateDeliveryInfo(HashMap<String, String> info) throws IOException {
         if(!validateName(info.get("name"))){
@@ -55,9 +57,6 @@ public class PlaceRushOrderController extends PlaceOrderController{
 
     @Override
     public int calculateShippingFee(Order order) {
-        Random rand = new Random();
-        int fees = (int) (((rand.nextFloat() * 10) / 100) * order.getAmount()) + 10000 * order.getlstOrderMedia().size();
-        LOGGER.info("Order Amount: " + order.getAmount() + " -- Shipping Fees: " + fees);
-        return fees;
+        return shippingFeeCalculator.calculateShippingFee(order);
     }
 }

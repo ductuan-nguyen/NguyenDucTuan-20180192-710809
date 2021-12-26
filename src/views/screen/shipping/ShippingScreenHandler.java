@@ -94,7 +94,9 @@ public class ShippingScreenHandler extends BaseScreenHandler implements Initiali
 		messages.put("address", address.getText());
 		messages.put("instructions", instructions.getText());
 		messages.put("province", province.getValue());
-		messages.put("date", datePicker.getValue().toString());
+		if(isRush) {
+			messages.put("date", datePicker.getValue().toString());
+		}
 		try {
 			if (isRush) {
 				getRushController().processDeliveryInfo(messages);

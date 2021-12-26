@@ -3,17 +3,15 @@ package controller;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Random;
 import java.util.logging.Logger;
 
 import entity.cart.Cart;
 import entity.cart.CartMedia;
-import common.exception.InvalidDeliveryInfoException;
 import entity.invoice.Invoice;
 import entity.order.Order;
 import entity.order.OrderMedia;
-import views.screen.popup.PopupScreen;
+import utils.ShippingFeeCalculator;
+import utils.WeightBasedFeeCalculator;
 
 /**
  * This class controls the flow of place order usecase in our AIMS project
@@ -25,7 +23,7 @@ public class PlaceOrderController extends BaseController{
      * Just for logging purpose
      */
     private static Logger LOGGER = utils.Utils.getLogger(PlaceOrderController.class.getName());
-
+    private final ShippingFeeCalculator shippingFeeCalculator = new WeightBasedFeeCalculator();
     /**
      * This method checks the avalibility of product when user click PlaceOrder button
      * @throws SQLException
@@ -111,17 +109,8 @@ public class PlaceOrderController extends BaseController{
         if(address == null) return false;
         return address.matches("[a-zA-Z0-9 ]+");
     }
-    
 
-    /**
-     * This method calculates the shipping fees of order
-     * @param order
-     * @return shippingFee
-     */
-    public int calculateShippingFee(Order order){
-        Random rand = new Random();
-        int fees = (int)( ( (rand.nextFloat()*10)/100 ) * order.getAmount() );
-        LOGGER.info("Order Amount: " + order.getAmount() + " -- Shipping Fees: " + fees);
-        return fees;
+    public int calculateShippingFee(Order order) {
+        return shippingFeeCalculator.calculateShippingFee(order);
     }
 }
