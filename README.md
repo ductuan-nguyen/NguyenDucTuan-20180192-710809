@@ -1,3 +1,4 @@
+# Environment: Java SDK 1.8
 #  An Internet Media Store
 <p align="center">
   <img src="assets/images/aims_cover_image.png" />
